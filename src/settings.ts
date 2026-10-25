@@ -52,7 +52,7 @@ export async function initSettings() {
   try {
     current = { ...DEFAULT_SETTINGS, ...((await loadSettings()) ?? {}) };
   } catch (e) {
-    console.error("[xbox-achievements] load failed", e);
+    console.error("[achievo] load failed", e);
   }
   listeners.forEach((fn) => fn(current));
 }
@@ -60,7 +60,7 @@ export async function initSettings() {
 export function updateSettings(patch: Partial<Settings>) {
   current = { ...current, ...patch };
   listeners.forEach((fn) => fn(current));
-  saveSettings(current).catch((e) => console.error("[xbox-achievements] save failed", e));
+  saveSettings(current).catch((e) => console.error("[achievo] save failed", e));
 }
 
 export function useSettings(): Settings {

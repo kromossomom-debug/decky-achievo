@@ -11,7 +11,7 @@ from pathlib import Path
 
 INSTALL = """
 ## Install
-1. Download **xbox-achievements.zip** below.
+1. Download **achievo.zip** below.
 2. On the Deck: Quick Access (`…`) → **Decky** → ⚙️ → **General** → turn on **Developer mode**.
 3. **Developer → Install Plugin from ZIP** and pick the file.
 

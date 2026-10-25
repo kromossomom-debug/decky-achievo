@@ -290,13 +290,13 @@ export default definePlugin(() => {
     try {
       subscription = NotificationStore?.m_valueCurrentToast?.Subscribe?.(onToast);
     } catch (e) {
-      console.error("[xbox-achievements] subscribe failed", e);
+      console.error("[achievo] subscribe failed", e);
     }
   });
 
   return {
-    name: "Xbox Achievement Toast",
-    titleView: <div className={staticClasses.Title}>Xbox Achievement Toast</div>,
+    name: "Achievo",
+    titleView: <div className={staticClasses.Title}>Achievo</div>,
     content: <Content />,
     icon: <FaTrophy />,
     onDismount() {

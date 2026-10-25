@@ -24,12 +24,12 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run build
       - run: python3 -m py_compile main.py
-      - run: scripts/package.sh xbox-achievements.zip
+      - run: scripts/package.sh achievo.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: xbox-achievements
-          path: xbox-achievements.zip
+          name: achievo
+          path: achievo.zip
 
       # Pushing a tag like v0.0.6-alpha publishes a release with the ZIP attached. The notes come
       # from that version's CHANGELOG.md section (GitHub's commit list if there isn't one).
@@ -46,9 +46,9 @@ jobs:
             notes=(--generate-notes)
           fi
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" xbox-achievements.zip --clobber
+            gh release upload "$TAG" achievo.zip --clobber
             if [[ "${notes[0]}" == "--notes-file" ]]; then gh release edit "$TAG" --notes-file notes.md; fi
           else
             # A normal release (not "pre-release"), so it shows as Latest on the repository page.
-            gh release create "$TAG" xbox-achievements.zip --title "Xbox Achievement Toast $TAG" "${notes[@]}" --latest
+            gh release create "$TAG" achievo.zip --title "Achievo $TAG" "${notes[@]}" --latest
           fi

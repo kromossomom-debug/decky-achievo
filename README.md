@@ -1,4 +1,6 @@
-<h1 align="center">🏆 Xbox Achievement Toast</h1>
+<h1 align="center">🏆 Achievo</h1>
+
+<p align="center"><i>Console-style achievement toasts for the Steam Deck.</i></p>
 
 <p align="center">
   <b>A <a href="https://github.com/SteamDeckHomebrew/decky-loader">Decky Loader</a> plugin that swaps Steam's achievement popup for a console-style one: Xbox Series X|S or PlayStation 5, your pick.</b><br>
@@ -43,12 +45,12 @@
 ## 📦 Install
 
 <p align="center">
-  <a href="https://github.com/kromossomom-debug/decky-xbox-achievement-toast/raw/main/xbox-achievements.zip">
-    <img src="https://img.shields.io/badge/Download-xbox--achievements.zip-107C10?style=for-the-badge&logo=steamdeck&logoColor=white" alt="Download xbox-achievements.zip" height="44">
+  <a href="https://github.com/kromossomom-debug/decky-achievo/raw/main/achievo.zip">
+    <img src="https://img.shields.io/badge/Download-achievo.zip-107C10?style=for-the-badge&logo=steamdeck&logoColor=white" alt="Download achievo.zip" height="44">
   </a>
 </p>
 
-1. Download **[xbox-achievements.zip](https://github.com/kromossomom-debug/decky-xbox-achievement-toast/raw/main/xbox-achievements.zip)** on your Deck (it goes to your Downloads folder).
+1. Download **[achievo.zip](https://github.com/kromossomom-debug/decky-achievo/raw/main/achievo.zip)** on your Deck (it goes to your Downloads folder).
 2. Open Quick Access (`…`) → **Decky** → ⚙️ → **General** and turn on **Developer mode**.
 3. Under **Developer → Install Plugin from ZIP**, pick the file from Downloads. Done.
 
@@ -78,7 +80,7 @@ the panel and pick it.
 ## ⚙️ Settings
 
 Everything lives in the plugin's panel in Quick Access. Your choices are saved to
-`~/homebrew/settings/xbox-achievements/settings.json`.
+`~/homebrew/settings/achievo/settings.json`.
 
 | Option | Default | What it does |
 |---|---|---|
@@ -128,7 +130,7 @@ main.py          # saves settings, reads your sound file
 ```bash
 npm install
 npm run build        # outputs dist/index.js
-npm run package      # build + xbox-achievements.zip
+npm run package      # build + achievo.zip
 ```
 
 Every push is built by GitHub Actions. To release, add a section for the new version to

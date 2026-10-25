@@ -1,6 +1,6 @@
 {
-  "name": "xbox-achievements",
-  "version": "0.0.2-alpha",
+  "name": "achievo",
+  "version": "0.0.3-alpha",
   "description": "Xbox Series X|S or PlayStation 5 style achievement notifications for SteamOS Game Mode",
   "type": "module",
   "scripts": {
@@ -26,6 +26,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kromossomom-debug/decky-xbox-achievement-toast"
+    "url": "https://github.com/kromossomom-debug/decky-achievo"
   }
 }

@@ -1,7 +1,15 @@
 # Changelog
 
-All notable changes to Xbox Achievement Toast. Versions are alphas: install the ZIP from each release
+All notable changes to Achievo. Versions are alphas: install the ZIP from each release
 with Decky's **Developer → Install Plugin from ZIP**.
+
+## [0.0.3-alpha] - 2026-10-25
+
+### Changed
+- **The plugin is now called Achievo**, since it does both Xbox and PlayStation styles. The ZIP is
+  `achievo.zip` and the repository moved to `kromossomom-debug/decky-achievo` (the old link redirects).
+  If you installed an earlier version, uninstall “Xbox Achievement Toast” in Decky first; settings start
+  fresh under `~/homebrew/settings/achievo/`.
 
 ## [0.0.2-alpha] - 2026-10-25
 

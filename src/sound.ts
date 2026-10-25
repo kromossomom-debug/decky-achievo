@@ -105,7 +105,7 @@ export async function loadCustomSound(path: string): Promise<boolean> {
     custom = { path, url: `data:${res.mime};base64,${res.data}` };
     return true;
   } catch (e) {
-    console.error("[xbox-achievements] read_sound failed", e);
+    console.error("[achievo] read_sound failed", e);
     return false;
   }
 }
@@ -118,7 +118,7 @@ export async function playCustom(path: string, volume: number): Promise<boolean>
     await audio.play();
     return true;
   } catch (e) {
-    console.error("[xbox-achievements] custom sound failed", e);
+    console.error("[achievo] custom sound failed", e);
     return false;
   }
 }

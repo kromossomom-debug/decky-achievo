@@ -47,7 +47,7 @@ class Plugin:
             return None
 
     async def _main(self):
-        decky.logger.info("Xbox Achievements loaded")
+        decky.logger.info("Achievo loaded")
 
     async def _unload(self):
-        decky.logger.info("Xbox Achievements unloaded")
+        decky.logger.info("Achievo unloaded")
