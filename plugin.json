@@ -1,0 +1,16 @@
+{
+  "name": "Xbox Achievement Toast",
+  "author": "kromossomo",
+  "flags": [],
+  "api_version": 1,
+  "publish": {
+    "tags": [
+      "achievements",
+      "notifications",
+      "xbox",
+      "theme"
+    ],
+    "description": "Xbox Series X|S style achievement notifications for Steam Deck Game Mode: animated pill toast, rare achievement variant, 9 screen positions and a custom sound.",
+    "image": ""
+  }
+}
