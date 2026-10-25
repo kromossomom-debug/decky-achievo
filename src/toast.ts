@@ -1,9 +1,10 @@
 /**
- * The Xbox-style achievement toast. Steam shows achievement popups in a small window of its own
+ * The console-style achievement toasts (Xbox pill or PlayStation trophy card). Steam shows achievement popups in a small window of its own
  * ("notificationtoasts_uidN"); while one of ours is up, Steam's content in that window is hidden
  * and our pill is drawn in its place, so it still appears above games like Steam's does.
  */
 import { t } from "./i18n";
+import type { Skin } from "./settings";
 
 const STYLE_ID = "xba-style";
 const WRAP_ID = "xba-wrap";
@@ -84,10 +85,50 @@ html.${ACTIVE_CLASS} body > *:not(#${WRAP_ID}) { visibility: hidden !important; 
   60% { transform: translate(var(--dx), var(--dy)) rotate(45deg) scale(1); opacity: 1; }
   100% { transform: translate(calc(var(--dx) * 1.4), calc(var(--dy) * 1.4)) rotate(45deg) scale(0); opacity: 0; }
 }
+
+/* PlayStation 5: a dark rounded card with the trophy's art, its name and the trophy grade. */
+.xps-card {
+  position: relative; display: flex; align-items: center; gap: 12px; overflow: hidden; box-sizing: border-box;
+  width: min(312px, calc(100vw - 8px)); height: min(68px, calc(100vh - 8px)); padding: 0 16px 0 8px;
+  border-radius: 12px; background: rgba(30, 31, 36, 0.96); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  font-family: "SST", "SST Pro", "Noto Sans", Arial, sans-serif;
+  animation:
+    xps-in 420ms cubic-bezier(0.2, 0.9, 0.3, 1) both,
+    xps-out 320ms ease-in calc(var(--xba-dur) - 340ms) forwards;
+}
+.xps-art {
+  position: relative; flex: 0 0 52px; height: 52px; border-radius: 8px; overflow: hidden;
+  background: #15161a; display: flex; align-items: center; justify-content: center; color: var(--xps-tier);
+}
+.xps-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.xps-art > svg { width: 60%; height: 60%; }
+.xps-art::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%); animation: xps-shine 900ms ease-out 380ms forwards;
+}
+.xps-text { flex: 1; min-width: 0; }
+.xps-name { font-size: 14px; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xps-tier {
+  display: flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; line-height: 1.3; color: #c9c9cf;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.xps-tier svg { flex: 0 0 13px; width: 13px; height: 13px; color: var(--xps-tier); }
+.xps-tier b { color: var(--xps-tier); font-weight: 600; }
+.xps-bronze { --xps-tier: #d08a55; }
+.xps-silver { --xps-tier: #c4ccd6; }
+.xps-gold { --xps-tier: #f0c24f; }
+.xps-gold .xps-card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(240, 194, 79, 0.35); }
+
+@keyframes xps-in { from { opacity: 0; transform: translateY(-16px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes xps-out { to { opacity: 0; transform: translateY(-10px); } }
+@keyframes xps-shine { to { transform: translateX(120%); } }
+
 @media (prefers-reduced-motion: reduce) {
   .xba-toast { animation: none; width: var(--xba-w); }
   .xba-text { animation: none; opacity: 1; }
-  .xba-badge::after, .xba-spark { display: none; }
+  .xba-badge::after, .xba-spark, .xps-art::after { display: none; }
+  .xps-card { animation: none; }
 }
 `;
 
@@ -147,21 +188,15 @@ function clear(doc: Document) {
   doc.documentElement.classList.remove(ACTIVE_CLASS);
 }
 
-/** Draws the toast. Returns false if Steam's toast window couldn't be reached (Steam's own toast then shows). */
-export function showToast(a: Achievement, rare: boolean, showRarity: boolean): boolean {
-  const w = toastWindow();
-  const doc = w?.document;
-  if (!doc?.body) return false;
+export type Tier = "bronze" | "silver" | "gold";
 
-  if (!doc.getElementById(STYLE_ID)) {
-    const style = doc.createElement("style");
-    style.id = STYLE_ID;
-    style.textContent = CSS;
-    doc.head.appendChild(style);
-  }
-  if (hideTimer !== undefined) window.clearTimeout(hideTimer);
-  clear(doc);
+/** Steam has no trophy grades, so the PlayStation card grades by rarity: rare ones are gold. */
+function tierFor(a: Achievement, rare: boolean): Tier {
+  if (rare) return "gold";
+  return a.pct < 30 ? "silver" : "bronze";
+}
 
+function xboxMarkup(a: Achievement, rare: boolean, showRarity: boolean): string {
   const sub = showRarity
     ? `<span class="xba-pct">${rare ? DIAMOND_SVG : ""}${escapeHtml(t.players(formatPct(a.pct)))}</span> · ${escapeHtml(a.name)}`
     : escapeHtml(a.name);
@@ -179,11 +214,7 @@ export function showToast(a: Achievement, rare: boolean, showRarity: boolean): b
         )
         .join("")
     : "";
-
-  const wrap = doc.createElement("div");
-  wrap.id = WRAP_ID;
-  wrap.style.setProperty("--xba-dur", `${a.durationMs}ms`);
-  wrap.innerHTML = `
+  return `
     <div class="xba-toast ${rare ? "xba-rare" : ""}" role="status">
       <div class="xba-badge">${TROPHY_SVG}</div>
       ${sparks}
@@ -192,6 +223,43 @@ export function showToast(a: Achievement, rare: boolean, showRarity: boolean): b
         <div class="xba-sub">${sub}</div>
       </div>
     </div>`;
+}
+
+function playstationMarkup(a: Achievement, rare: boolean, showRarity: boolean): string {
+  const tier = tierFor(a, rare);
+  const art = /^(https?:|data:image\/)/.test(a.image) ? `<img src="${escapeHtml(a.image)}" alt="">` : TROPHY_SVG;
+  const rarity = showRarity ? ` · ${escapeHtml(t.players(formatPct(a.pct)))}` : "";
+  return `
+    <div class="xps-${tier}">
+      <div class="xps-card" role="status">
+        <div class="xps-art">${art}</div>
+        <div class="xps-text">
+          <div class="xps-name">${escapeHtml(a.name)}</div>
+          <div class="xps-tier">${TROPHY_SVG}<span><b>${escapeHtml(t.tiers[tier])}</b>${rarity}</span></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/** Draws the toast. Returns false if Steam's toast window couldn't be reached (Steam's own toast then shows). */
+export function showToast(a: Achievement, skin: Skin, rare: boolean, showRarity: boolean): boolean {
+  const w = toastWindow();
+  const doc = w?.document;
+  if (!doc?.body) return false;
+
+  if (!doc.getElementById(STYLE_ID)) {
+    const style = doc.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = CSS;
+    doc.head.appendChild(style);
+  }
+  if (hideTimer !== undefined) window.clearTimeout(hideTimer);
+  clear(doc);
+
+  const wrap = doc.createElement("div");
+  wrap.id = WRAP_ID;
+  wrap.style.setProperty("--xba-dur", `${a.durationMs}ms`);
+  wrap.innerHTML = skin === "playstation" ? playstationMarkup(a, rare, showRarity) : xboxMarkup(a, rare, showRarity);
   doc.body.appendChild(wrap);
   doc.documentElement.classList.add(ACTIVE_CLASS);
   hideTimer = window.setTimeout(() => clear(doc), a.durationMs + 150);

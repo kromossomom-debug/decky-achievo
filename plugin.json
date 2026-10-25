@@ -6,11 +6,13 @@
   "publish": {
     "tags": [
       "achievements",
+      "trophies",
       "notifications",
       "xbox",
+      "playstation",
       "theme"
     ],
-    "description": "Xbox Series X|S style achievement notifications for Steam Deck Game Mode: animated pill toast, rare achievement variant, 9 screen positions and a custom sound.",
+    "description": "Console-style achievement notifications for Steam Deck Game Mode: Xbox Series X|S pill or PlayStation 5 trophy card, 9 screen positions, original chimes or your own sound.",
     "image": ""
   }
 }

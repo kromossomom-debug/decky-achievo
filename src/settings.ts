@@ -3,11 +3,15 @@ import { useEffect, useState } from "react";
 
 export type SoundMode = "chime" | "custom" | "steam" | "none";
 
+/** Which console's notification to imitate. */
+export type Skin = "xbox" | "playstation";
+
 /** Where the toast shows: vertical (top / middle / bottom) + horizontal (left / center / right). */
 export type Position = "tl" | "tc" | "tr" | "ml" | "mc" | "mr" | "bl" | "bc" | "br";
 
 export interface Settings {
   enabled: boolean;
+  skin: Skin;
   sound: SoundMode;
   /** Path of the player's own sound file, for sound = "custom". */
   customPath: string;
@@ -21,8 +25,12 @@ export interface Settings {
   edgeGap: number;
 }
 
+/** Where each console shows its notifications. */
+export const SKIN_POSITION: Record<Skin, Position> = { xbox: "bc", playstation: "tr" };
+
 export const DEFAULT_SETTINGS: Settings = {
   enabled: true,
+  skin: "xbox",
   sound: "chime",
   customPath: "",
   volume: 80,

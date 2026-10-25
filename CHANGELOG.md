@@ -3,6 +3,16 @@
 All notable changes to Xbox Achievement Toast. Versions are alphas: install the ZIP from each release
 with Decky's **Developer → Install Plugin from ZIP**.
 
+## [0.0.2-alpha] - 2026-10-25
+
+### Added
+- **PlayStation 5 style.** Pick **Style → PlayStation 5** in the panel for a trophy card instead of the
+  Xbox pill: a dark rounded card that drops in with the achievement's art, its name and a trophy grade
+  (**Gold** for rare achievements, **Silver** under 30% of players, **Bronze** otherwise).
+- An original PlayStation-style chime: a soft bell “ting”, two notes for gold trophies.
+- Each style has its usual spot: bottom center for Xbox, top right for PlayStation. Switching style moves
+  the toast there, unless you had chosen another spot.
+
 ## [0.0.1-alpha] - 2026-10-25
 
 ### Added

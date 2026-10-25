@@ -1,9 +1,12 @@
 /**
- * Achievement sounds. The default is an original chime synthesized on the fly (a bright two-note
- * "bling", three notes for rare achievements), so the plugin ships no third-party audio. Players can
+ * Achievement sounds. The default is an original chime synthesized on the fly for each style (Xbox: a
+ * bright two-note "bling", three notes for rare ones; PlayStation: a soft bell "ting", two notes for
+ * gold), so the plugin ships no third-party audio. Players can
  * pick their own file instead; it is read by the backend and played from memory.
  */
 import { callable } from "@decky/api";
+
+import type { Skin } from "./settings";
 
 const readSound = callable<[path: string], { mime: string; data: string } | null>("read_sound");
 
@@ -15,13 +18,43 @@ function audioContext(): AudioContext {
   return ctx;
 }
 
-/** E6 → B6, plus E7 for rare achievements. */
-const NOTES = [1318.51, 1975.53];
-const RARE_NOTES = [1318.51, 1975.53, 2637.02];
-const NOTE_GAP_S = 0.085;
-const NOTE_LENGTH_S = 1.1;
+interface Chime {
+  notes: number[];
+  rareNotes: number[];
+  gapS: number;
+  lengthS: number;
+  /** Oscillators per note: wave, frequency multiple, level. */
+  partials: [OscillatorType, number, number][];
+}
 
-export function playChime(rare: boolean, volume: number) {
+const CHIMES: Record<Skin, Chime> = {
+  // E6 → B6, plus E7 for rare achievements; a sine body with an octave-up triangle sparkle.
+  xbox: {
+    notes: [1318.51, 1975.53],
+    rareNotes: [1318.51, 1975.53, 2637.02],
+    gapS: 0.085,
+    lengthS: 1.1,
+    partials: [
+      ["sine", 1, 0.8],
+      ["triangle", 2, 0.12],
+    ],
+  },
+  // A6, plus D7 for gold; inharmonic overtones make it ring like a small bell.
+  playstation: {
+    notes: [1760],
+    rareNotes: [1760, 2349.32],
+    gapS: 0.12,
+    lengthS: 0.9,
+    partials: [
+      ["sine", 1, 0.7],
+      ["sine", 2.76, 0.16],
+      ["sine", 5.4, 0.05],
+    ],
+  },
+};
+
+export function playChime(skin: Skin, rare: boolean, volume: number) {
+  const chime = CHIMES[skin] ?? CHIMES.xbox;
   const ac = audioContext();
   const now = ac.currentTime + 0.02;
   const master = ac.createGain();
@@ -39,19 +72,15 @@ export function playChime(rare: boolean, volume: number) {
   master.connect(ac.destination);
   tone.connect(master);
 
-  (rare ? RARE_NOTES : NOTES).forEach((freq, i) => {
-    const start = now + i * NOTE_GAP_S;
+  (rare ? chime.rareNotes : chime.notes).forEach((freq, i) => {
+    const start = now + i * chime.gapS;
     const env = ac.createGain();
     env.gain.setValueAtTime(0.0001, start);
     env.gain.exponentialRampToValueAtTime(1, start + 0.006);
-    env.gain.exponentialRampToValueAtTime(0.0001, start + NOTE_LENGTH_S);
+    env.gain.exponentialRampToValueAtTime(0.0001, start + chime.lengthS);
     env.connect(master);
     env.connect(echo);
-    // A sine for the body and a quiet octave-up triangle for the sparkle.
-    for (const [type, mult, level] of [
-      ["sine", 1, 0.8],
-      ["triangle", 2, 0.12],
-    ] as const) {
+    for (const [type, mult, level] of chime.partials) {
       const osc = ac.createOscillator();
       const g = ac.createGain();
       osc.type = type;
@@ -59,7 +88,7 @@ export function playChime(rare: boolean, volume: number) {
       g.gain.value = level;
       osc.connect(g).connect(env);
       osc.start(start);
-      osc.stop(start + NOTE_LENGTH_S + 0.05);
+      osc.stop(start + chime.lengthS + 0.05);
     }
   });
 }

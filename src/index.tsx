@@ -13,7 +13,17 @@ import { FaCoffee, FaTrophy } from "react-icons/fa";
 
 import { t } from "./i18n";
 import { place, removePlacement, unplace } from "./place";
-import { DEFAULT_SETTINGS, Position, SoundMode, getSettings, initSettings, updateSettings, useSettings } from "./settings";
+import {
+  DEFAULT_SETTINGS,
+  Position,
+  SKIN_POSITION,
+  Skin,
+  SoundMode,
+  getSettings,
+  initSettings,
+  updateSettings,
+  useSettings,
+} from "./settings";
 import { closeAudio, loadCustomSound, playChime, playCustom } from "./sound";
 import { Achievement, removeToastStyles, showToast } from "./toast";
 
@@ -63,7 +73,7 @@ function onToast(toast: any) {
   // The current toast goes back to null right after Steam queues it, so only ours are acted on.
   const a = s.enabled ? readAchievement(toast) : null;
   if (!a) return;
-  if (showToast(a, a.rare, s.showRarity)) {
+  if (showToast(a, s.skin, a.rare, s.showRarity)) {
     place(s.position, s.edgeGap);
     unplace(a.durationMs + UNPLACE_DELAY_MS);
   }
@@ -80,10 +90,10 @@ function patchSound() {
     const s = getSettings();
     const a = s.enabled ? readAchievement(n) : null;
     if (!a || s.sound === "steam") return originalPlaySound!.call(this, n);
-    if (s.sound === "chime") playChime(a.rare, s.volume);
+    if (s.sound === "chime") playChime(s.skin, a.rare, s.volume);
     else if (s.sound === "custom") {
       playCustom(s.customPath, s.volume).then((ok) => {
-        if (!ok) playChime(a.rare, s.volume);
+        if (!ok) playChime(s.skin, a.rare, s.volume);
       });
     }
   };
@@ -130,6 +140,13 @@ async function pickSoundFile() {
   }
 }
 
+/** Switching style also moves the toast to that console's usual spot, unless the player chose another one. */
+function changeSkin(skin: Skin) {
+  const s = getSettings();
+  const followDefault = s.position === SKIN_POSITION[s.skin];
+  updateSettings(followDefault ? { skin, position: SKIN_POSITION[skin] } : { skin });
+}
+
 function Content() {
   const st = useSettings();
   const change = updateSettings;
@@ -140,6 +157,17 @@ function Content() {
       <PanelSection>
         <PanelSectionRow>
           <ToggleField label={t.enableLabel} description={t.enableDesc} checked={st.enabled} onChange={(enabled) => change({ enabled })} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <DropdownItem
+            label={t.skinLabel}
+            rgOptions={[
+              { data: "xbox", label: t.skinXbox },
+              { data: "playstation", label: t.skinPlayStation },
+            ]}
+            selectedOption={st.skin}
+            onChange={(o) => changeSkin(o.data as Skin)}
+          />
         </PanelSectionRow>
       </PanelSection>
 

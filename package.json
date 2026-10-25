@@ -1,7 +1,7 @@
 {
   "name": "xbox-achievements",
-  "version": "0.0.1-alpha",
-  "description": "Xbox Series X|S style achievement notifications for SteamOS Game Mode",
+  "version": "0.0.2-alpha",
+  "description": "Xbox Series X|S or PlayStation 5 style achievement notifications for SteamOS Game Mode",
   "type": "module",
   "scripts": {
     "build": "rollup -c",
